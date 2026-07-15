@@ -1,0 +1,14 @@
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+langchain==0.3.13
+langchain-community==0.3.13
+langchain-openai==0.2.14
+langchain-postgres==0.0.8
+psycopg2-binary==2.9.10
+sqlalchemy==2.0.36
+python-multipart==0.0.20
+python-dotenv==1.0.1
+pypdf==5.1.0
+python-docx==1.1.2
+pydantic==2.10.4
+requests==2.34.2
