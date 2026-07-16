@@ -1,11 +1,16 @@
 const API_BASE = 'http://localhost:8001/api/v1';
 
 export async function chat(question: string) {
-  const res = await fetch(`${API_BASE}/chat`, {  // ← 改成 /chat
+  const res = await fetch(`${API_BASE}/chat`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ question, knowledge_base_id: null, history: [] }),
   });
+  
+  if (!res.ok) {
+    throw new Error(`API 请求失败: ${res.status}`);
+  }
+  
   return res.json();
 }
 
@@ -18,5 +23,10 @@ export async function uploadFiles(files: FileList) {
     method: 'POST',
     body: formData,
   });
+  
+  if (!res.ok) {
+    throw new Error(`上传失败: ${res.status}`);
+  }
+  
   return res.json();
 }
