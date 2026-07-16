@@ -2,9 +2,8 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import Optional, List
 import requests
-from langchain_openai import OpenAIEmbeddings
-from langchain_postgres import PGVector
 from app.core.config import settings
+from app.services.rag.vector_store import get_vector_store
 
 router = APIRouter()
 
@@ -20,19 +19,6 @@ class Source(BaseModel):
 class ChatResponse(BaseModel):
     answer: str
     sources: List[Source] = []
-
-def get_vector_store():
-    embeddings = OpenAIEmbeddings(
-        model=settings.EMBEDDING_MODEL,
-        api_key=settings.OPENAI_API_KEY,
-        base_url=settings.OPENAI_BASE_URL,
-    )
-    return PGVector(
-        embeddings=embeddings,
-        collection_name="knowledge_base",
-        connection=settings.DATABASE_URL,
-        use_jsonb=True,
-    )
 
 def build_prompt(question: str, contexts: List[str]) -> str:
     context_text = "\n\n---\n\n".join(contexts)
@@ -53,9 +39,19 @@ def build_prompt(question: str, contexts: List[str]) -> str:
 @router.post("", response_model=ChatResponse)
 async def chat(request: ChatRequest):
     try:
+        print("=" * 50)
+        print("=== chat 函数被调用 ===")
+        print(f"问题: {request.question}")
+        
+        print(f"OPENAI_BASE_URL: {settings.OPENAI_BASE_URL}")
+        print(f"OPENAI_API_KEY: {settings.OPENAI_API_KEY[:15]}...")
+        print(f"LLM_MODEL: {settings.LLM_MODEL}")
+        
+        print("正在检索向量数据库...")
         vector_store = get_vector_store()
         retriever = vector_store.as_retriever(search_kwargs={"k": 4})
         docs = retriever.invoke(request.question)
+        print(f"检索到 {len(docs)} 个文档片段")
         
         if not docs:
             return ChatResponse(
@@ -73,30 +69,43 @@ async def chat(request: ChatRequest):
         ]
         
         prompt = build_prompt(request.question, contexts)
+        print(f"Prompt 长度: {len(prompt)} 字符")
         
-        # 用 requests 调用 DeepSeek API
+        api_url = f"{settings.OPENAI_BASE_URL}/chat/completions"
+        print(f"完整请求地址: {api_url}")
+        
+        headers = {
+            "Authorization": f"Bearer {settings.OPENAI_API_KEY}",
+            "Content-Type": "application/json"
+        }
+        
+        payload = {
+            "model": settings.LLM_MODEL,
+            "messages": [
+                {"role": "system", "content": "你是一个基于私有知识库的问答助手，只根据提供的文档回答问题。"},
+                {"role": "user", "content": prompt}
+            ],
+            "temperature": 0.1,
+        }
+        
+        print("正在发送请求到 DeepSeek API...")
         response = requests.post(
-            f"{settings.OPENAI_BASE_URL}/chat/completions",
-            headers={
-                "Authorization": f"Bearer {settings.OPENAI_API_KEY}",
-                "Content-Type": "application/json"
-            },
-            json={
-                "model": settings.LLM_MODEL,
-                "messages": [
-                    {"role": "system", "content": "你是一个基于私有知识库的问答助手，只根据提供的文档回答问题。"},
-                    {"role": "user", "content": prompt}
-                ],
-                "temperature": 0.1,
-            },
+            api_url,
+            headers=headers,
+            json=payload,
             timeout=30
         )
+        
+        print(f"响应状态码: {response.status_code}")
+        print(f"响应内容前200字符: {response.text[:200]}")
         
         if response.status_code != 200:
             raise Exception(f"DeepSeek API 错误: {response.status_code} - {response.text}")
         
         result = response.json()
         answer = result["choices"][0]["message"]["content"]
+        print(f"回答: {answer[:100]}...")
+        print("=" * 50)
         
         return ChatResponse(
             answer=answer,
@@ -104,4 +113,8 @@ async def chat(request: ChatRequest):
         )
         
     except Exception as e:
+        print(f"!!! 异常发生: {type(e).__name__}: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        print("=" * 50)
         raise HTTPException(status_code=500, detail=f"问答失败: {str(e)}")
