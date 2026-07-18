@@ -18,6 +18,7 @@
 |------|------|
 | 对话问答 | ![对话界面](screenshots/frontend-chat.png) |
 | 文档上传 | ![上传功能](screenshots/frontend-upload.png) |
+| 文档问答 | ![文档对话](screenshots/frontend-resume-chat.png) |
 
 ### 后端 API
 
@@ -41,7 +42,7 @@
 | 模块 | 状态 | 说明 |
 |------|------|------|
 | 文档上传与解析（TXT） | ✅ 已完成 | 支持TXT文件上传和文本提取 |
-| 文档上传与解析（PDF/DOCX） | 🔄 开发中 | 解析引擎扩展中 |
+| 文档上传与解析（PDF/DOCX） | ✅ 已完成 | 解析引擎扩展中 |
 | 分层自适应文本切片 | ✅ 已完成 | LangChain RecursiveCharacterTextSplitter |
 | pgvector向量存储 | ✅ 已完成 | PostgreSQL + pgvector 向量检索 |
 | RAG智能问答 | ✅ 已完成 | DeepSeek大模型 + 阿里云百炼Embedding |
