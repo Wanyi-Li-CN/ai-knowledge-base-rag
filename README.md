@@ -10,6 +10,14 @@
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ---
+
+## 📖 项目简介
+
+本项目针对传统轻量化单RAG文档问答系统功能单一、检索性能弱、无任务协同能力等短板，设计并实现一套**基于LangChain多智能体协同 + PostgreSQL/pgvector向量检索**的私有知识库智能问答平台。
+
+系统支持多格式文档解析、向量知识库构建、多轮上下文问答、批量文档智能加工、任务异步调度、检索性能可视化监控等完整能力。
+
+---
 ## 📸 运行截图
 
 ### 前端界面
@@ -26,14 +34,6 @@
 |------|------|
 | Swagger 文档 | ![Swagger](screenshots/swagger-api.png) |
 | 问答 API 返回 | ![问答响应](screenshots/api-chat-response.png) |
-
----
-
-## 📖 项目简介
-
-本项目针对传统轻量化单RAG文档问答系统功能单一、检索性能弱、无任务协同能力等短板，设计并实现一套**基于LangChain多智能体协同 + PostgreSQL/pgvector向量检索**的私有知识库智能问答平台。
-
-系统支持多格式文档解析、向量知识库构建、多轮上下文问答、批量文档智能加工、任务异步调度、检索性能可视化监控等完整能力。
 
 ---
 
