@@ -10,6 +10,23 @@
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ---
+## 📸 运行截图
+
+### 前端界面
+
+| 功能 | 截图 |
+|------|------|
+| 对话问答 | ![对话界面](screenshots/frontend-chat.png) |
+| 文档上传 | ![上传功能](screenshots/frontend-upload.png) |
+
+### 后端 API
+
+| 功能 | 截图 |
+|------|------|
+| Swagger 文档 | ![Swagger](screenshots/swagger-api.png) |
+| 问答 API 返回 | ![问答响应](screenshots/api-chat-response.png) |
+
+---
 
 ## 📖 项目简介
 
